@@ -63,7 +63,7 @@ namespace buffalo{
 		template<typename... Args>
 			void ssfmt(std::stringstream &ss,const char* szFmt,Args&&... args){
 				int len = strlen(szFmt);
-				int argLen = sizeof...(args) + 1;
+				int argLen = sizeof...(args);
 				int idx = 0;
 				int b=0;
 				int e=0;

@@ -19,6 +19,7 @@ using namespace std;
 using namespace buffalo;
 
 int main(){
-	ssfmt::fmt("dssxxfqwe{0},{1},{2}",'a',1123,5.2);
+	cout << X << endl;
+	ssfmt::fmt("试试中文dssxxfqwe{0},{1},{2},{3}来吧",'a',1123,5.2,"哈哈");
 	return 0;
 }

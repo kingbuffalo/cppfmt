@@ -4,12 +4,20 @@ OBJFLAG=-lpthread
 SRC = ${wildcard *.cpp}
 OBJ = ${patsubst %.cpp, %.o, $(SRC)}
 
-%.o: %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
-
 main:$(OBJ)
 	$(CC) -o $@ $^ $(OBJFLAG)
 
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -MMD -o $@
+
+%.d: %.cpp
+	@set -e;rm -rf $@;$(CC) -MM $< > $@.$$$$;  \
+		sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' <$@.$$$$ > $@;\
+		rm -rf $@.$$$$
+
+-include $(OBJ:.o=.d)
+
+
 .PHONY:clean
 clean:
-	rm -rf main *.o
+	rm -rf main *.o *.d *.d.*

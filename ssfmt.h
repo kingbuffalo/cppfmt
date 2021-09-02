@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstring>
 
+#define X 13
 namespace buffalo{
 	namespace ssfmt{
 		namespace _buffalo_private{

@@ -5,10 +5,10 @@ SRC = ${wildcard *.cpp}
 OBJ = ${patsubst %.cpp, %.o, $(SRC)}
 
 main:$(OBJ)
-	$(CC) -o $@ $^ $(OBJFLAG)
+	$(CC) -o  $@ $^ $(OBJFLAG)
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) -c $< -MMD -o $@
+	$(CC) $(CFLAGS) -c $< -MMD -o $@ -O3
 
 %.d: %.cpp
 	@set -e;rm -rf $@;$(CC) -MM $< > $@.$$$$;  \
@@ -16,7 +16,6 @@ main:$(OBJ)
 		rm -rf $@.$$$$
 
 -include $(OBJ:.o=.d)
-
 
 .PHONY:clean
 clean:

@@ -16,8 +16,8 @@ namespace buffalo{
 			};
 
 			void GetDigIndex(const char* szFmt,int len,int begin,int &b,int &e, int &index){
-				static char char2Type[128] = {0};
-				if (int idx='{';char2Type[idx] == 0 ) {
+				static char char2Type[256] = {0};
+				if (std::size_t idx='{';char2Type[idx] == 0 ) {
 					char2Type[idx] = 1;
 					idx = '}';
 					char2Type[idx] = 3;
@@ -31,7 +31,7 @@ namespace buffalo{
 				bool bFound = false;
 				CHAR_TYPE pct = CHAR_TYPE::STR;
 				for ( int i=begin;i<len;i++ ){
-					CHAR_TYPE ct = static_cast<CHAR_TYPE>(char2Type[static_cast<int>(szFmt[i])]);
+					CHAR_TYPE ct = static_cast<CHAR_TYPE>(char2Type[static_cast<std::size_t>(szFmt[i])]);
 					if ( ct == CHAR_TYPE::PARAMBEGIN && pct != CHAR_TYPE::STRSPEC){
 						b = i;
 					}else if ( pct == CHAR_TYPE::PARAM && ct == CHAR_TYPE::PARAMEND ){

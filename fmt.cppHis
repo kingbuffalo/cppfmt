@@ -1,0 +1,215 @@
+#include <iostream>
+#include <chrono>
+#include <sstream>
+#include <cassert>
+#include <vector>
+#include <queue>
+#include <string>
+#include <cstring>
+#include <cmath>
+#include <climits>
+#include <functional>
+#include <list>
+#include <cstdlib>
+#include <set>
+#include <stack>
+#include <map>
+#include <algorithm>
+
+using namespace std;
+
+template<std::size_t addV>
+constexpr int Inc1(){
+	return 1+addV;
+}
+
+template<int arrLen>
+void _GenStrArrHelp(int tmpi, std::array<std::string,arrLen> &strVec ,std::stringstream &ss){
+}
+
+template<int arrLen,typename T, typename... Args>
+void _GenStrArrHelp(int tmpi,std::array<std::string,arrLen> &strVec,std::stringstream &ss,T&& t,Args&&... args){
+	ss << t;
+	ss >> strVec[tmpi];
+	//strVec[tmpi].assign(ss.str().c_str());
+	//ss.clear();
+	std::cout << "tmpi=" << tmpi << ",strVec=" <<strVec[tmpi] << std::endl;
+	if ( sizeof...(args) > 0 ){
+		_GenStrArrHelp<arrLen>(tmpi+1,strVec,ss,std::forward<Args>(args)...);
+	}
+}
+
+template<typename T, typename... Args>
+auto _GenStrArr(T&& t,Args&&... args){
+	std::stringstream ss;
+	std::array<std::string,Inc1<sizeof...(args)>() > strVec;
+	_GenStrArrHelp<Inc1<sizeof...(args)>() >(0,strVec,ss,std::forward<T>(t),std::forward<Args>(args)...);
+	return strVec;
+}
+
+enum class CHAR_TYPE  {
+	STR = 0,
+	PARAMBEGIN = 1,
+	PARAM = 2,
+	PARAMEND = 3,
+	STRSPEC = 4,
+};
+
+
+void GetDigIndex(const char* szFmt,int len,int begin,int &b,int &e, int &index){
+	static char char2Type[128] = {0};
+	if (int idx='{';char2Type[idx] == 0 ) {
+		char2Type[idx] = 1;
+		idx = '}';
+		char2Type[idx] = 3;
+		idx = '\\';
+		char2Type[idx] = 4;
+		for ( int i='0';i<'9'; i++ ){
+			char2Type[i] = 2;
+		}
+	}
+	int argIdx = 0;
+	index = 0;
+	bool bFound = false;
+	CHAR_TYPE pct = CHAR_TYPE::STR;
+	for ( int i=begin;i<len;i++ ){
+		CHAR_TYPE ct = static_cast<CHAR_TYPE>(char2Type[static_cast<int>(szFmt[i])]);
+		if ( ct == CHAR_TYPE::PARAMBEGIN && pct != CHAR_TYPE::STRSPEC){
+			b = i;
+		}else if ( pct == CHAR_TYPE::PARAM && ct == CHAR_TYPE::PARAMEND ){
+			e = i;
+			break;
+		}else if ( ct == CHAR_TYPE::PARAM && (pct == CHAR_TYPE::PARAMBEGIN || pct == CHAR_TYPE::PARAM)){
+			bFound = true;
+			argIdx = argIdx*10 + szFmt[i]-'0';
+		}
+		pct = ct;
+	}
+	index = bFound ? argIdx : -1;
+}
+
+void _GenStr(stringstream &ss,int idx){
+}
+
+template<typename T, typename... Args>
+void _GenStr(stringstream &ss,int idx,T&& t,Args&&... args){
+	if ( idx == 0 ){
+		ss << t;
+	}
+	if ( sizeof...(args) > 0  ){
+		_GenStr(ss,idx-1,std::forward<Args>(args)...);
+	}
+}
+
+
+template<typename... Args>
+void sfmtex(stringstream &ss,const char* szFmt,Args&&... args){
+	using namespace std;
+	//auto strVec = _GenStrArr(std::forward<Args>(args)...);
+	int len = strlen(szFmt);
+	int argLen = sizeof...(args) + 1;
+	int idx = 0;
+	int b=0;
+	int e=0;
+	int argIdx=0;
+	while( idx<len ){
+		GetDigIndex(szFmt,len,idx,b,e,argIdx);
+		if ( argIdx >= 0 ){
+			ss.write(szFmt+idx,b-idx);
+			if ( argIdx <  argLen ){
+				_GenStr(ss,argIdx,std::forward<Args>(args)...);
+			}
+			idx = e+1;
+		}else{
+			ss.write(szFmt+idx,len-idx);
+			break;
+		}
+	}
+}
+
+template<typename... Args>
+std::string sfmt(const char* szFmt,Args&&... args){
+	auto strVec = _GenStrArr( std::forward<Args>(args)...);
+	int len = strlen(szFmt);
+	std::stringstream ss;
+	int idx = 0;
+	int b=0;
+	int e=0;
+	int argIdx=0;
+	while( idx<len ){
+		GetDigIndex(szFmt,len,idx,b,e,argIdx);
+		if ( argIdx >= 0 ){
+			for( int i=idx;i<b;i++ ){
+				ss << szFmt[i];
+			}
+			if ( argIdx < strVec.size() ){
+				ss << strVec[argIdx];
+			}
+			idx = e+1;
+		}else{
+			for( int i=idx;i<len;i++ ){
+				ss << szFmt[i];
+			}
+			break;
+		}
+	}
+	std::string ret(ss.str());
+	return ret;
+}
+
+template<typename... Args>
+void fmt(const char* szFmt,Args&&... args){
+	auto str = sfmt(szFmt,std::forward<Args>(args)... );
+	std::cout << str << std::endl;
+}
+
+template<typename T>
+class AddSpace;
+template<typename T>
+std::ostream& operator<< ( std::ostream& os,AddSpace<T> const& addSpace );
+
+template<typename T>
+class AddSpace{
+	T const &re;
+	public:
+	AddSpace(T const& r):re(r){}
+	friend std::ostream& operator<< ( std::ostream& os,AddSpace<T> const& addSpace ){
+		os << addSpace.re << ' ';
+		return os;
+	}
+};
+
+template<typename... T>
+void Pprint(T... t){
+	(std::cout << ... << AddSpace(t)) << std::endl;;
+}
+
+
+#define TEST_MAX 1000000
+
+int main(){
+	auto start = std::chrono::steady_clock::now();
+	stringstream ss;
+	for ( int i=0;i<TEST_MAX; i++ ){
+		ss.str("");
+		sfmtex(ss,"dalfdskjf{0},{1}","abc",2);
+	}
+	cout << ss.str().size() << endl;
+	auto end = std::chrono::steady_clock::now();
+	std::chrono::duration<double> elapsed_seconds = end-start;
+	std::cout << "elapsed time: " << elapsed_seconds.count() << "s\n";
+	start = end;
+	char tmp[32] = {0};
+	for ( int i=0;i<TEST_MAX ; i++ ){
+		sprintf(tmp,"dalfdskjf%s,%d","abc",2);
+	}
+	end = std::chrono::steady_clock::now();
+	std::chrono::duration<double> elapsed_seconds2 = end-start;
+	std::cout << "elapsed time2: " << elapsed_seconds2.count() << "s\n";
+
+	ss.str("");
+	sfmtex(ss,"dalfdskjf{0},{1},abc",1,std::string("xxx"));
+	std::cout << ss.str() << endl;
+
+	return 0;
+}

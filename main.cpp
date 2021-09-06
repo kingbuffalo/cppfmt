@@ -20,9 +20,11 @@ using namespace std;
 using namespace buffalo;
 
 #define TEST_MAX 999999
+#define CHAR_LEN 50
 
 int main(){
-	fmt("试试中文dssxxfqwe{0},{1},{2},{3}来吧",'a',1123,5.2,"哈哈");
+	//fmt("试试中文dssxxfqwe{0},{1},{2},{3}来吧",'a',1123,5.2,"哈哈");
+	fmt("试试dssxxfqwe{0},{1},{2},{3}",'a',1123,5.2,"哈哈");
 
 	cout << "----------------------" << endl;
 
@@ -47,11 +49,11 @@ int main(){
 
 
 	start = end;
+	char *tmp = new char[CHAR_LEN];
 	for ( int i=0;i<TEST_MAX ; i++ ){
-		char *tmp = new char[32];
-		snprintf(tmp,32,"dalfdskjf%s,%d","abc",2);
-		delete[] tmp;
+		snprintf(tmp,CHAR_LEN,"试试dalfdskjf%s,%d,%lf,%s,哈哈","abc",2,5.2,"哈仲裁");
 	}
+	delete[] tmp;
 	end = std::chrono::steady_clock::now();
 	std::chrono::duration<double> elapsed_seconds2 = end-start;
 	std::cout << "sprintf time: " << elapsed_seconds2.count() << "s\n";

@@ -1,0 +1,44 @@
+#include <iostream>
+#include <cassert>
+#include <sstream>
+#include <vector>
+#include <queue>
+#include <string>
+#include <cstring>
+#include <cmath>
+#include <climits>
+#include <functional>
+#include <list>
+#include <cstdlib>
+#include <set>
+#include <stack>
+#include <map>
+#include <algorithm>
+
+
+using namespace std;
+
+string _GenStr(int idx){
+	return string{""};
+}
+
+template<typename T, typename... Args>
+string _GenStr(int idx,T&& t,Args&&... args){
+	if ( idx == 0 ){
+		stringstream ss;
+		ss << t;
+		return ss.str();
+	}
+	if ( sizeof...(args) > 0  ){
+		return _GenStr(idx-1,std::forward<Args>(args)...);
+	}
+	return string{""};
+}
+
+
+
+int main(){
+	auto x = _GenStr(2,"abc",1,33,5.1);
+	cout << x << endl;
+	return 0;
+}

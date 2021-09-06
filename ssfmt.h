@@ -13,6 +13,10 @@ namespace std{
 	string to_string (const string& str){
 		return str;
 	}
+
+	string to_string (char ch){
+		return string(1,ch);
+	}
 }
 
 
@@ -66,7 +70,7 @@ namespace buffalo{
 				if ( idx == 0 ){
 					ss << t;
 				}
-				if ( sizeof...(args) > 0  ){
+				if ( sizeof...(args) > 0  && idx > 0 ){
 					_GenStr(ss,idx-1,std::forward<Args>(args)...);
 				}
 			}
@@ -79,7 +83,7 @@ namespace buffalo{
 				if ( idx == 0 ){
 					s.append(std::to_string(std::forward<T>(t)));
 				}
-				if ( sizeof...(args) > 0  ){
+				if ( sizeof...(args) > 0 && idx > 0  ){
 					_GenStrStr(s,idx-1,std::forward<Args>(args)...);
 				}
 			}

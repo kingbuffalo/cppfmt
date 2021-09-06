@@ -5,9 +5,9 @@
 
 输出如下
 ```
-试试中文dssxxfqwe97,1123,5.200000,哈哈来吧
+试试dssxxfqwea,1123,5.200000,哈哈
 ----------------------
-ssfmt time: 0.520102s
-sfmt time: 0.172512s
-sprintf time: 0.12979s
+ssfmt time: 0.488036s
+sfmt time: 0.164266s
+sprintf time: 0.31262s
 ```
